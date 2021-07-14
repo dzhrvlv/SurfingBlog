@@ -1,0 +1,68 @@
+﻿@model SurfClub.Models.DbModels.Post
+
+@using Microsoft.AspNetCore.Http
+@using SurfClub.Helpers
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+}
+
+@if (userId != null)
+{
+    <form asp-controller="Feed" asp-action="AddPost"
+          method="post" enctype="multipart/form-data">
+        <div class="card">
+            <div class="card-header">
+                Добавление новой записи
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label asp-for="Text">Введите текст</label>
+                    <textarea asp-for="Text" rows="10" cols="100"></textarea>
+                    <span asp-validation-for="Text"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="file"
+                           accept=".jpg,.jpeg,.png"
+                           name="imageData" />
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Добавить" />
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+
+@foreach (var post in ViewBag.Posts)
+{
+    <div class="card">
+        <div class="card-header">
+            @{
+                var userPhoto = ImageHelper.GetUrl(post.Author.Photo);
+                if (userPhoto != null)
+                {
+                    <img class="userpic" src="@Url.Content(userPhoto)"/>
+                }
+            }
+
+            @post.Author.Nickname
+
+            @post.PublishDate
+        </div>
+        <div class="card-body">
+            @post.Text
+            @{
+                var photoUrl = ImageHelper.GetUrl(post.Photo);
+                if (photoUrl != null)
+                {
+                    <img class="" src="@Url.Content(photoUrl)" width="200" />
+                }
+            }
+        </div>
+    </div>
+
+}
